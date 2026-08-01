@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fundfit-frontend-deployment
+  namespace: fundfit-prod
+  labels:
+    app: fundfit-frontend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: fundfit-frontend
+  template:
+    metadata:
+      labels:
+        app: fundfit-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/techspartan90-lang/fundfit-ai-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fundfit-frontend-service
+  namespace: fundfit-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: fundfit-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http

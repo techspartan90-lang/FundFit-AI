@@ -1,37 +1,48 @@
-from app.models.base import TimestampMixin
-from app.models.user import User, UserRole, Session, APIKey
-from app.models.profile import InvestorProfile, RiskAssessment
+from app.models.base import Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin
+from app.models.user import User, UserRole, UserSession, APIKey, Settings
+from app.models.profile import InvestorProfile, RiskAssessment, BehaviorProfile
+from app.models.goal import Goal, GoalProgress
+from app.models.fund import AMC, FundCategory, MutualFund, Document
+from app.models.market import Benchmark, BenchmarkHistory, MarketData, EconomicIndicator, MarketRegime
 from app.models.portfolio import Portfolio, PortfolioHolding, Transaction, Watchlist
-from app.models.fund import MutualFund, Document
-from app.models.goal import Goal
-from app.models.market import MarketData, Benchmark
-from app.models.recommendation import Recommendation, Alert, Report, Notification
-from app.models.advisor import Advisor, Client
-from app.models.admin import Admin, AuditLog
+from app.models.recommendation import Recommendation, RecommendationHistory, Alert, Notification, Report
+from app.models.advisor import AdvisorClient
+from app.models.admin import AdminLog, AuditLog
 
 __all__ = [
+    "Base",
+    "UUIDPrimaryKeyMixin",
     "TimestampMixin",
+    "SoftDeleteMixin",
     "User",
     "UserRole",
-    "Session",
+    "UserSession",
     "APIKey",
+    "Settings",
     "InvestorProfile",
     "RiskAssessment",
+    "BehaviorProfile",
+    "Goal",
+    "GoalProgress",
+    "AMC",
+    "FundCategory",
+    "MutualFund",
+    "Document",
+    "Benchmark",
+    "BenchmarkHistory",
+    "MarketData",
+    "EconomicIndicator",
+    "MarketRegime",
     "Portfolio",
     "PortfolioHolding",
     "Transaction",
     "Watchlist",
-    "MutualFund",
-    "Document",
-    "Goal",
-    "MarketData",
-    "Benchmark",
     "Recommendation",
+    "RecommendationHistory",
     "Alert",
-    "Report",
     "Notification",
-    "Advisor",
-    "Client",
-    "Admin",
+    "Report",
+    "AdvisorClient",
+    "AdminLog",
     "AuditLog"
 ]
