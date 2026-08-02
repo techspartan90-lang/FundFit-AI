@@ -30,6 +30,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 }) => {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', organization: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitDemo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbzHHEUEDKQC6T0CNwrgSRt70Fqq9IvlTh3HcdE0xZCpqV4JN5lqM7VV_dYgvf-Q8636/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          organization: formData.organization,
+          timestamp: new Date().toISOString()
+        })
+      });
+      setDemoSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit demo request to Google Apps Script:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#090D16] text-white flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
@@ -379,21 +406,56 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <p className="text-xs text-slate-300">Our enterprise solution architect will contact you within 2 business hours.</p>
               </div>
             ) : (
-              <form onSubmit={(e) => { e.preventDefault(); setDemoSubmitted(true); }} className="space-y-3 text-xs">
+              <form onSubmit={handleSubmitDemo} className="space-y-3 text-xs">
                 <div>
                   <label className="text-slate-300 font-semibold block mb-1">Full Name</label>
-                  <input type="text" required placeholder="Aria Vance" className="input-field text-xs" />
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="Aria Vance" 
+                    className="input-field text-xs bg-slate-950/40 text-white" 
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    disabled={isSubmitting}
+                  />
                 </div>
                 <div>
                   <label className="text-slate-300 font-semibold block mb-1">Work Email</label>
-                  <input type="email" required placeholder="aria@techcorp.in" className="input-field text-xs" />
+                  <input 
+                    type="email" 
+                    required 
+                    placeholder="aria@techcorp.in" 
+                    className="input-field text-xs bg-slate-950/40 text-white" 
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    disabled={isSubmitting}
+                  />
                 </div>
                 <div>
                   <label className="text-slate-300 font-semibold block mb-1">AUM / Organization</label>
-                  <input type="text" required placeholder="₹25 Crore+ AUM" className="input-field text-xs" />
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="₹25 Crore+ AUM" 
+                    className="input-field text-xs bg-slate-950/40 text-white" 
+                    value={formData.organization}
+                    onChange={(e) => setFormData(prev => ({ ...prev, organization: e.target.value }))}
+                    disabled={isSubmitting}
+                  />
                 </div>
-                <button type="submit" className="btn-primary w-full text-xs justify-center pt-2">
-                  Confirm Booking
+                <button 
+                  type="submit" 
+                  className="btn-primary w-full text-xs justify-center pt-2 flex items-center gap-2"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-transparent rounded-full animate-spin"></span>
+                      <span>Booking...</span>
+                    </>
+                  ) : (
+                    "Confirm Booking"
+                  )}
                 </button>
               </form>
             )}
