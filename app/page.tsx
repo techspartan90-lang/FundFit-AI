@@ -3,252 +3,191 @@
 import React, { useState } from 'react';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'risk-assessment' | 'analytics' | 'profile'>('dashboard');
-  const [timeRange, setTimeRange] = useState<'1W' | '1M'>('1W');
-  const [selectedGoal, setSelectedGoal] = useState<'wealth' | 'retirement' | 'education' | 'safety'>('wealth');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'portfolio' | 'funds' | 'goals' | 'market' | 'ai-recommendations' | 'reports' | 'alerts' | 'watchlist' | 'settings'>('dashboard');
+  const [collapsed, setCollapsed] = useState(false);
+  const [chartRange, setChartRange] = useState<'1M' | '3M' | '6M' | '1Y' | '5Y' | 'MAX'>('1Y');
+  const [userRole, setUserRole] = useState<'investor' | 'advisor' | 'admin'>('investor');
+
+  const mainNav = [
+    { id: 'dashboard', label: 'Dashboard', badge: null },
+    { id: 'portfolio', label: 'Portfolio & Holdings', badge: '₹24.8L' },
+    { id: 'funds', label: 'Mutual Fund Explorer', badge: '25k+' },
+    { id: 'goals', label: 'Goal Planner', badge: '3 Goals' },
+    { id: 'market', label: 'Market Intelligence', badge: 'Live' },
+    { id: 'ai-recommendations', label: 'AI Recommendations', badge: '94 Score' },
+    { id: 'reports', label: 'Reports & Tax Statements', badge: null },
+    { id: 'alerts', label: 'Risk Alerts', badge: '1 Alert' },
+    { id: 'watchlist', label: 'Watchlist', badge: '4 Funds' },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#0D121F] font-sans flex flex-col justify-between selection:bg-blue-200 antialiased">
+    <div className="min-h-screen bg-[#020617] text-slate-100 font-sans flex flex-col justify-between selection:bg-[#2563EB] selection:text-white antialiased">
       
       {/* Top Navbar */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40 px-4 sm:px-8 py-3.5 shadow-sm">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <div onClick={() => setActiveTab('dashboard')} className="flex items-center gap-2.5 cursor-pointer group">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <rect x="3" y="5" width="18" height="14" rx="3" />
-                <circle cx="9" cy="12" r="2" />
-                <path d="M16 12h2" />
-              </svg>
+      <header className="sticky top-0 z-40 bg-[#020617]/90 backdrop-blur-md border-b border-[#1E293B] px-4 sm:px-8 py-2.5 shadow-md">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
+          
+          {/* Logo & Search */}
+          <div className="flex items-center gap-6">
+            <div onClick={() => setCurrentView('dashboard')} className="flex items-center gap-2.5 cursor-pointer">
+              <div className="w-8 h-8 rounded-xl bg-[#2563EB] flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-500/20">
+                ⚡
+              </div>
+              <span className="font-extrabold text-lg tracking-tight text-white">
+                FUND FIT <span className="text-[#2563EB]">AI</span>
+              </span>
             </div>
-            <span className="font-black text-xl tracking-tight text-slate-900">FundFit AI</span>
+
+            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#0F172A] border border-[#1E293B] text-xs text-slate-400 w-64">
+              <span>🔍 Search funds, goals (Ctrl+K)...</span>
+              <kbd className="ml-auto px-1.5 py-0.5 text-[10px] bg-[#1E293B] text-slate-300 rounded font-mono">Ctrl+K</kbd>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setActiveTab('risk-assessment')} 
-              className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5 ${
-                activeTab === 'risk-assessment' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-              }`}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                <path d="M9 12l2 2 4-4m5 .5a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Risk Assessment</span>
-            </button>
+          {/* Center Market Ticker */}
+          <div className="hidden lg:flex items-center gap-4 text-xs py-1.5 px-3.5 rounded-xl bg-[#0F172A] border border-[#1E293B] font-mono">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse"></span>
+              MARKET LIVE:
+            </span>
+            <span className="font-bold text-slate-300">NIFTY 50 <span className="text-white font-black">24,180.5</span> <span className="text-[#22C55E]">+0.59%</span></span>
+            <span className="font-bold text-slate-300">SENSEX <span className="text-white font-black">79,450.2</span> <span className="text-[#22C55E]">+0.61%</span></span>
+            <span className="font-bold text-slate-300">USD/INR <span className="text-white font-black">83.50</span></span>
           </div>
+
+          {/* Right User Controls */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1 bg-[#0F172A] p-1 rounded-xl border border-[#1E293B] text-xs font-bold">
+              <button onClick={() => setUserRole('investor')} className={`px-2.5 py-1 rounded-lg ${userRole === 'investor' ? 'bg-[#2563EB] text-white' : 'text-slate-400'}`}>Investor</button>
+              <button onClick={() => setUserRole('advisor')} className={`px-2.5 py-1 rounded-lg ${userRole === 'advisor' ? 'bg-[#14B8A6] text-white' : 'text-slate-400'}`}>Advisor</button>
+              <button onClick={() => setUserRole('admin')} className={`px-2.5 py-1 rounded-lg ${userRole === 'admin' ? 'bg-[#7C3AED] text-white' : 'text-slate-400'}`}>Admin</button>
+            </div>
+
+            <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center font-black text-white text-xs">
+              AV
+            </div>
+          </div>
+
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6 pb-28">
+      {/* Main Shell */}
+      <div className="flex flex-1 max-w-[1600px] w-full mx-auto">
         
-        {/* Dashboard View */}
-        {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-            
-            {/* Balance */}
+        {/* Collapsible Sidebar */}
+        <aside className={`bg-[#0F172A] border-r border-[#1E293B] flex flex-col justify-between transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} shrink-0 min-h-screen p-3 space-y-4`}>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-2 pt-2">
+              {!collapsed && <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Mutual Fund Intelligence</span>}
+              <button onClick={() => setCollapsed(!collapsed)} className="p-1 rounded bg-[#1E293B] text-slate-400 hover:text-white text-xs ml-auto">
+                {collapsed ? '→' : '←'}
+              </button>
+            </div>
+
             <div className="space-y-1">
-              <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Global Portfolio</span>
-              <div className="flex flex-wrap items-baseline gap-3">
-                <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">$124,500.00</h1>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-extrabold shadow-sm">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
-                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                  </svg>
-                  ~ 2.4%
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2.5 pt-1.5">
-                <div className="flex items-center gap-1.5 text-xs font-extrabold text-blue-700">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  </svg>
-                  <span>Low-Medium Risk</span>
-                </div>
-                <div className="w-32 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                  <div className="w-[28%] h-full bg-blue-600 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Performance History Card */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-100 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-black text-base text-slate-900">Performance History</h3>
-                <div className="flex p-0.5 bg-slate-100 rounded-xl">
-                  <button 
-                    onClick={() => setTimeRange('1W')}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      timeRange === '1W' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-500 hover:text-slate-900'
-                    }`}
-                  >
-                    1W
-                  </button>
-                  <button 
-                    onClick={() => setTimeRange('1M')}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      timeRange === '1M' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-500 hover:text-slate-900'
-                    }`}
-                  >
-                    1M
-                  </button>
-                </div>
-              </div>
-
-              <div className="relative pt-4">
-                <svg className="w-full h-32 overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="nextChartGlow" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#2563EB" stopOpacity="0.2" />
-                      <stop offset="100%" stopColor="#2563EB" stopOpacity="0.0" />
-                    </linearGradient>
-                  </defs>
-                  <line x1="0" y1="90" x2="300" y2="90" stroke="#F1F5F9" strokeWidth="1" />
-                  <path 
-                    d={timeRange === '1W' 
-                      ? "M 10 65 C 50 65, 70 80, 100 80 C 130 80, 150 40, 180 40 C 210 40, 230 90, 250 90 C 270 90, 280 40, 290 35 L 290 90 L 10 90 Z"
-                      : "M 10 80 C 60 40, 90 20, 130 60 C 170 100, 200 40, 250 30 C 270 20, 280 50, 290 45 L 290 90 L 10 90 Z"
-                    } 
-                    fill="url(#nextChartGlow)" 
-                    className="transition-all duration-500"
-                  />
-                  <path 
-                    d={timeRange === '1W'
-                      ? "M 10 65 C 50 65, 70 80, 100 80 C 130 80, 150 40, 180 40 C 210 40, 230 90, 250 90 C 270 90, 280 40, 290 35"
-                      : "M 10 80 C 60 40, 90 20, 130 60 C 170 100, 200 40, 250 30 C 270 20, 280 50, 290 45"
-                    }
-                    fill="none" 
-                    stroke="#2563EB" 
-                    strokeWidth="4" 
-                    strokeLinecap="round"
-                    className="transition-all duration-500"
-                  />
-                  <circle cx={timeRange === '1W' ? "180" : "250"} cy={timeRange === '1W' ? "40" : "30"} r="5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2.5" />
-                  <circle cx="290" cy={timeRange === '1W' ? "35" : "45"} r="5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2.5" />
-                </svg>
-
-                <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider pt-3">
-                  {timeRange === '1W' ? (
-                    <><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span></>
-                  ) : (
-                    <><span>WEEK 1</span><span>WEEK 2</span><span>WEEK 3</span><span>WEEK 4</span></>
+              {mainNav.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentView(item.id as typeof currentView)}
+                  className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold transition-all ${
+                    currentView === item.id
+                      ? 'bg-[#2563EB]/15 text-[#2563EB] border-r-2 border-[#2563EB]'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  {!collapsed && <span>{item.label}</span>}
+                  {!collapsed && item.badge && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">{item.badge}</span>
                   )}
-                </div>
-              </div>
-            </div>
-
-            {/* Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between h-36">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600">
-                    <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                      <path d="M23 6l-9.5 9.5-5-5L1 18" />
-                    </svg>
-                  </div>
-                  <span className="text-xs font-extrabold text-emerald-600 tracking-wide">Bullish</span>
-                </div>
-                <div className="space-y-0.5">
-                  <span className="text-xs font-bold text-slate-400 block">Market Sentiment</span>
-                  <span className="text-lg font-black text-slate-900 leading-tight">Strong Momentum</span>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between h-36 relative overflow-hidden">
-                <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-15 pointer-events-none">
-                  <svg viewBox="0 0 36 36" className="w-28 h-28">
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#CBD5E1" strokeWidth="4" />
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#2563EB" strokeWidth="4" strokeDasharray="68 32" strokeDashoffset="0" />
-                  </svg>
-                </div>
-                <div className="flex items-center justify-between relative z-10">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-                    <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <span className="text-base font-black text-blue-600">68%</span>
-                </div>
-                <div className="relative z-10 space-y-0.5">
-                  <span className="text-xs font-bold text-slate-400 block">Goal: Retirement</span>
-                  <span className="text-lg font-black text-slate-900 leading-tight">On Track</span>
-                </div>
-              </div>
-            </div>
-
-            {/* AI Pick Card */}
-            <div className="bg-[#0A1931] text-white rounded-3xl p-6 shadow-xl border border-slate-800 space-y-5">
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-600 text-xs font-black uppercase tracking-widest text-white shadow-md">
-                  TOP PICK
-                </span>
-                <span className="text-xs font-bold text-slate-300">94% Confidence Score</span>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xl font-black text-white leading-tight">Vanguard Total Stock Market</h3>
-                <p className="text-xs font-bold text-blue-400 uppercase tracking-widest">Ticker: VTI</p>
-              </div>
-              <div className="flex items-center justify-between border-t border-slate-800/80 pt-4">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-xs font-black text-slate-300">S&P</div>
-                  <div className="w-8 h-8 rounded-full bg-white border-2 border-slate-700 flex items-center justify-center text-xs font-black text-slate-900">US</div>
-                </div>
-                <button className="px-6 py-2.5 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-black text-xs shadow-lg">
-                  Invest Now
                 </button>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* Risk Assessment View */}
-        {activeTab === 'risk-assessment' && (
-          <div className="space-y-6 max-w-xl mx-auto">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-black text-blue-600">
-                <span>STEP 02 OF 05</span>
-                <span>40% Complete</span>
-              </div>
-              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full w-[40%]"></div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
-              <div className="text-center space-y-1">
-                <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-xs font-black text-blue-600 border border-blue-100">
-                  Growth-Oriented Persona
-                </span>
-                <p className="text-xs font-bold text-slate-500">
-                  Investor Score: <span className="text-slate-900 font-black text-sm">84/100</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="font-black text-base text-slate-900">What is your primary investment goal?</h3>
-              <button onClick={() => setSelectedGoal('wealth')} className={`w-full p-4 rounded-2xl text-left border flex items-center justify-between ${selectedGoal === 'wealth' ? 'border-blue-600 bg-blue-50/40' : 'border-slate-100 bg-white'}`}>
-                <span className="font-black text-sm text-slate-900">Wealth Creation</span>
-              </button>
-              <button onClick={() => setSelectedGoal('retirement')} className={`w-full p-4 rounded-2xl text-left border flex items-center justify-between ${selectedGoal === 'retirement' ? 'border-blue-600 bg-blue-50/40' : 'border-slate-100 bg-white'}`}>
-                <span className="font-black text-sm text-slate-900">Retirement</span>
-              </button>
+              ))}
             </div>
           </div>
-        )}
+        </aside>
 
-      </main>
+        {/* Main Body */}
+        <main className="flex-1 p-6 space-y-6">
+          
+          {/* Top Hero Card */}
+          <div className="rounded-3xl p-6 bg-[#0F172A] border border-[#1E293B] space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] text-xs font-extrabold">
+                ● SEBI Registered RIA Partner
+              </span>
+              <span className="px-3 py-1 rounded-full bg-[#2563EB]/10 border border-[#2563EB]/20 text-blue-400 text-xs font-extrabold">
+                Regime: Bullish Expansion
+              </span>
+            </div>
 
-      {/* Fixed Bottom Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-100 py-3 px-6 shadow-lg">
-        <div className="max-w-md mx-auto flex items-center justify-between text-xs font-black">
-          <button onClick={() => setActiveTab('dashboard')} className={activeTab === 'dashboard' ? 'text-blue-600' : 'text-slate-400'}>Home</button>
-          <button onClick={() => setActiveTab('risk-assessment')} className={activeTab === 'risk-assessment' ? 'text-blue-600' : 'text-slate-400'}>Risk App</button>
-        </div>
-      </nav>
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              Investor Command Center <span className="text-slate-400 font-normal text-lg">| FinTech Platform</span>
+            </h1>
+          </div>
+
+          {/* 6 Top KPI Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div className="p-4 rounded-2xl bg-[#0F172A] border border-[#1E293B] space-y-1">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Portfolio Value</span>
+              <div className="text-xl font-black text-white font-mono">₹24,85,000</div>
+              <span className="text-xs font-bold text-[#22C55E]">+18.4% XIRR</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#0F172A] border border-[#1E293B] space-y-1">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Today&apos;s Gain</span>
+              <div className="text-xl font-black text-[#22C55E] font-mono">+₹14,250</div>
+              <span className="text-xs font-bold text-[#22C55E]">+0.58% Today</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#0F172A] border border-[#1E293B] space-y-1">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">AI Health Score</span>
+              <div className="text-xl font-black text-white font-mono">94 / 100</div>
+              <span className="text-xs font-bold text-[#7C3AED]">Excellent</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#0F172A] border border-[#1E293B] space-y-1">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Risk Profile</span>
+              <div className="text-xl font-black text-cyan-400 font-mono">28 / 100</div>
+              <span className="text-xs font-bold text-cyan-400">Low-Medium Risk</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#0F172A] border border-[#1E293B] space-y-1">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Goal Progress</span>
+              <div className="text-xl font-black text-[#F59E0B] font-mono">68%</div>
+              <span className="text-xs font-bold text-slate-400">Retirement Target</span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#0F172A] border border-[#1E293B] space-y-1">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Market Status</span>
+              <div className="text-sm font-black text-white">Bullish Cycle</div>
+              <span className="text-xs font-bold text-[#22C55E]">VIX Low (14.2)</span>
+            </div>
+          </div>
+
+          {/* Main Chart */}
+          <div className="p-6 rounded-3xl bg-[#0F172A] border border-[#1E293B] space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-extrabold text-lg text-white">Portfolio Growth Performance</h3>
+              <div className="flex p-0.5 bg-[#020617] rounded-xl border border-[#1E293B] text-xs font-bold">
+                {(['1M', '3M', '6M', '1Y', '5Y', 'MAX'] as const).map((r) => (
+                  <button key={r} onClick={() => setChartRange(r)} className={`px-3 py-1 rounded-lg ${chartRange === r ? 'bg-[#2563EB] text-white' : 'text-slate-400'}`}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative pt-2">
+              <svg className="w-full h-44" viewBox="0 0 300 100" preserveAspectRatio="none">
+                <path d="M 10 70 C 50 70, 70 85, 100 80 C 130 75, 150 35, 180 35 C 210 35, 230 85, 250 85 C 270 85, 280 40, 290 30" fill="none" stroke="#2563EB" strokeWidth="3.5" />
+                <circle cx="180" cy="35" r="4" fill="#7C3AED" />
+                <circle cx="290" cy="30" r="4" fill="#14B8A6" />
+              </svg>
+            </div>
+          </div>
+
+        </main>
+
+      </div>
 
     </div>
   );
