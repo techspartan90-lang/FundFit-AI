@@ -147,7 +147,7 @@ export function App() {
             )}
 
             {currentView === 'mobile-ui' && (
-              <FullAppView />
+              <FullAppView onNavigate={(view) => setCurrentView(view)} />
             )}
 
           </main>
