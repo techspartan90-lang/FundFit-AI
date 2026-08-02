@@ -15,7 +15,7 @@ import { AdminPortalView } from './components/AdminPortalView';
 import { SettingsView } from './components/SettingsView';
 import { CommandPalette } from './components/CommandPalette';
 import { AIChatbotDrawer } from './components/AIChatbotDrawer';
-import { MobileMockupView } from './components/MobileMockupView';
+import { FullAppView } from './components/FullAppView';
 
 
 export function App() {
@@ -148,7 +148,7 @@ export function App() {
             )}
 
             {currentView === 'mobile-ui' && (
-              <MobileMockupView />
+              <FullAppView />
             )}
 
           </main>
