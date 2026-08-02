@@ -40,6 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'ai-recommendations', label: 'AI Recommendations', icon: BrainCircuit, badge: '92 Score' },
     { id: 'reports', label: 'Reports & Tax Statements', icon: FileText, badge: null },
     { id: 'alerts', label: 'Risk Alerts', icon: Bell, badge: '1 Alert' },
+    { id: 'mobile-ui', label: 'Mobile Mockup UI', icon: Sparkles, badge: 'New' },
   ];
 
   const portalNav = [

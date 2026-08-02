@@ -15,6 +15,8 @@ import { AdminPortalView } from './components/AdminPortalView';
 import { SettingsView } from './components/SettingsView';
 import { CommandPalette } from './components/CommandPalette';
 import { AIChatbotDrawer } from './components/AIChatbotDrawer';
+import { MobileMockupView } from './components/MobileMockupView';
+
 
 export function App() {
   const [appState, setAppState] = useState<'landing' | 'auth' | 'app'>('landing');
@@ -143,6 +145,10 @@ export function App() {
 
             {currentView === 'settings' && (
               <SettingsView />
+            )}
+
+            {currentView === 'mobile-ui' && (
+              <MobileMockupView />
             )}
 
           </main>
