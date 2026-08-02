@@ -17,7 +17,6 @@ import { CommandPalette } from './components/CommandPalette';
 import { AIChatbotDrawer } from './components/AIChatbotDrawer';
 import { FullAppView } from './components/FullAppView';
 
-
 export function App() {
   const [appState, setAppState] = useState<'landing' | 'auth' | 'app'>('landing');
   const [currentView, setCurrentView] = useState<string>('mobile-ui');
