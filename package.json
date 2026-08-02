@@ -1,40 +1,27 @@
 {
-  "name": "fundfit-ai",
+  "name": "temp-next",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
-    "@hookform/resolvers": "^5.6.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "axios": "^1.19.0",
-    "framer-motion": "^12.43.0",
-    "gsap": "^3.15.0",
-    "lucide-react": "^0.479.0",
-    "ogl": "^1.0.11",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-hook-form": "^7.84.0",
-    "react-router-dom": "^7.18.2",
-    "recharts": "^3.10.1",
-    "tailwindcss": "^4.3.3",
-    "zod": "^4.4.3",
-    "zustand": "^5.0.14"
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "next": "15.5.22"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
-    "oxlint": "^0.15.0",
-    "shadcn": "^4.16.1",
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0"
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.22",
+    "@eslint/eslintrc": "^3"
   }
 }

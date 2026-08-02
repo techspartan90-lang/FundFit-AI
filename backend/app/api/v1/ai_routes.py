@@ -143,3 +143,157 @@ async def explain_recommendation(payload: ExplainRecommendationRequest):
         fit_score_breakdown=payload.fit_score_breakdown
     )
     return success_response(data=res, message="XAI explanation generated")
+
+# LLM-Powered Conversational AI Endpoints
+from app.services.llm_service import llm_service
+
+class ChatCompletionRequest(BaseModel):
+    message: str
+    conversation_history: Optional[List[Dict[str, str]]] = None
+    model: Optional[str] = None
+    temperature: float = 0.7
+    max_tokens: Optional[int] = None
+
+class ChatCompletionResponse(BaseModel):
+    response: str
+    model_used: str
+    timestamp: str
+
+class EnhanceExplanationRequest(BaseModel):
+    base_explanation: str
+    context: Dict[str, Any]
+    user_query: Optional[str] = None
+    model: Optional[str] = None
+    temperature: float = 0.7
+
+class EnhanceExplanationResponse(BaseModel):
+    enhanced_explanation: str
+    model_used: str
+    improvement_summary: str
+
+@router.post("/chat/completion", response_model=APIResponse[ChatCompletionResponse])
+async def chat_completion(payload: ChatCompletionRequest):
+    """
+    Generate a conversational response using LLM for financial advice and planning.
+    This endpoint provides natural language interactions with financial expertise.
+    """
+    try:
+        # Prepare messages for chat
+        messages = []
+        
+        # Add system message to set financial advisor context
+        system_message = {
+            "role": "system",
+            "content": """You are FundFit AI, an expert financial advisor specializing in mutual fund investments, 
+            portfolio management, and financial planning for Indian investors. You provide clear, accurate, 
+            and actionable advice based on sound financial principles. When discussing specific funds, 
+            consider factors like expense ratios, historical performance, risk profile, and suitability for 
+            different investor types. Always encourage diversification and remind users that past performance 
+            does not guarantee future results. If uncertain about specific regulatory or tax matters, 
+            recommend consulting with a qualified financial advisor or tax professional."""
+        }
+        messages.append(system_message)
+        
+        # Add conversation history if provided
+        if payload.conversation_history:
+            messages.extend(payload.conversation_history)
+        
+        # Add current user message
+        messages.append({
+            "role": "user",
+            "content": payload.message
+        })
+        
+        # Generate response using LLM
+        response_text = await llm_service.generate_chat_response(
+            messages=messages,
+            model=payload.model,
+            temperature=payload.temperature,
+            max_tokens=payload.max_tokens
+        )
+        
+        from datetime import datetime
+        return success_response(
+            data=ChatCompletionResponse(
+                response=response_text,
+                model_used=payload.model or settings.OLLAMA_DEFAULT_MODEL,
+                timestamp=datetime.utcnow().isoformat() + "Z"
+            ),
+            message="Chat completion generated successfully"
+        )
+        
+    except Exception as e:
+        logger.error(f"Error in chat completion: {e}")
+        # Return a helpful error response
+        from datetime import datetime
+        return success_response(
+            data=ChatCompletionResponse(
+                response="I apologize, but I'm experiencing technical difficulties. Please try again later or consult with a human financial advisor for immediate assistance.",
+                model_used="error-fallback",
+                timestamp=datetime.utcnow().isoformat() + "Z"
+            ),
+            message="Chat completion failed - using fallback response"
+        )
+
+@router.post("/enhance-explanation", response_model=APIResponse[EnhanceExplanationResponse])
+async def enhance_explanation(payload: EnhanceExplanationRequest):
+    """
+    Enhance a basic financial explanation using LLM to make it more natural, 
+    comprehensive, and tailored to the user's needs.
+    """
+    try:
+        # Construct prompt for enhancement
+        enhancement_prompt = f"""
+        You are an expert financial communicator. Enhance the following financial explanation 
+        to make it more clear, engaging, and helpful for the user.
+        
+        ORIGINAL EXPLANATION:
+        {payload.base_explanation}
+        
+        CONTEXT:
+        {json.dumps(payload.context, indent=2)}
+        
+        USER'S QUESTION OR CONCERN:
+        {payload.user_query or "No specific question provided - improve general clarity and usefulness"}
+        
+        GUIDELINES FOR ENHANCEMENT:
+        1. Keep all factual information accurate and unchanged
+        2. Make the language more conversational and accessible
+        3. Add relevant examples or analogies where helpful
+        4. Address the user's specific concern if provided
+        5. Ensure compliance with financial advisory best practices
+        6. Maintain a professional yet approachable tone
+        7. If appropriate, suggest next steps or related considerations
+        
+        Provide only the enhanced explanation, no additional commentary.
+        """
+        
+        # Generate enhanced explanation
+        enhanced_text = await llm_service.generate_completion(
+            prompt=enhancement_prompt,
+            model=payload.model,
+            temperature=payload.temperature
+        )
+        
+        from datetime import datetime
+        return success_response(
+            data=EnhanceExplanationResponse(
+                enhanced_explanation=enhanced_text.strip(),
+                model_used=payload.model or settings.OLLAMA_DEFAULT_MODEL,
+                improvement_summary="Enhanced clarity, accessibility, and user relevance while preserving factual accuracy"
+            ),
+            message="Explanation enhanced successfully"
+        )
+        
+    except Exception as e:
+        logger.error(f"Error enhancing explanation: {e}")
+        # Return the original explanation if enhancement fails
+        from datetime import datetime
+        return success_response(
+            data=EnhanceExplanationResponse(
+                enhanced_explanation=payload.base_explanation,
+                model_used="fallback",
+                improvement_summary="Enhancement failed - returned original explanation"
+            ),
+            message="Explanation enhancement failed - returned original"
+        )
