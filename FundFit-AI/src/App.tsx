@@ -20,7 +20,7 @@ import { MobileMockupView } from './components/MobileMockupView';
 
 export function App() {
   const [appState, setAppState] = useState<'landing' | 'auth' | 'app'>('landing');
-  const [currentView, setCurrentView] = useState<string>('dashboard');
+  const [currentView, setCurrentView] = useState<string>('mobile-ui');
   const [userRole, setUserRole] = useState<'investor' | 'advisor' | 'admin'>('investor');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
